@@ -11,7 +11,6 @@ FROM gostable AS go-linux
 # Build-base consists of build platform dependencies and xx.
 # These will be used at current arch to yield execute the cross compilations.
 FROM go-${TARGETOS} AS build-base
-
 RUN apk add --no-cache clang lld
 
 COPY --from=xx / /
@@ -20,6 +19,7 @@ COPY --from=xx / /
 FROM build-base as build
 
 ARG TARGETPLATFORM
+RUN go install github.com/go-delve/delve/cmd/dlv@latest
 
 # Some dependencies have to installed 
 # for the target platform: https://github.com/tonistiigi/xx#go--cgo
@@ -53,8 +53,8 @@ ENV CGO_ENABLED=1
 
 RUN export CGO_LDFLAGS="-static -fuse-ld=lld" && \
   xx-go build \
-  -ldflags "-s -w" \
   -tags 'netgo,osusergo,static_build' \
+  -gcflags="all=-N -l" \
   -o /source-controller -trimpath main.go;
 
 # Ensure that the binary was cross-compiled correctly to the target platform.
@@ -66,8 +66,16 @@ ARG TARGETPLATFORM
 RUN apk --no-cache add ca-certificates \
   && update-ca-certificates
 
+FROM python:alpine
+RUN apk add gcc musl-dev python3-dev libffi-dev openssl-dev cargo make
+RUN pip install --upgrade pip
+RUN pip install azure-cli
+
 # Copy over binary from build
 COPY --from=build /source-controller /usr/local/bin/
+#COPY .out/source-controller /usr/local/bin/
+COPY --from=build /go/bin/dlv /
 
 USER 65534:65534
+#ENTRYPOINT [ "/dlv", "--listen=:40000", "--headless=true", "--api-version=2", "--accept-multiclient", "exec", "/usr/local/bin/source-controller", "--" ]
 ENTRYPOINT [ "source-controller" ]
