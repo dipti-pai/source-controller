@@ -1,0 +1,11 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: azure-devops
+  namespace: default
+spec:
+  interval: 1m
+  url: https://dev.azure.com/diptipai/diptipai-gitops-test/_git/diptipai-azuredevops-sshtest1
+  ref:
+    branch: main
+  provider: azure

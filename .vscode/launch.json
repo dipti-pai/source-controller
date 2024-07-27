@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "name": "agent",
+            "type": "go",
+            "request": "attach",
+            "mode": "remote",
+            "port": 40000,
+            "host": "127.0.0.1",
+            "logOutput": "dap",
+            "showLog": true
+        }
+    ]
+}

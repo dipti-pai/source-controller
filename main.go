@@ -50,7 +50,7 @@ import (
 	"github.com/fluxcd/pkg/runtime/pprof"
 	"github.com/fluxcd/pkg/runtime/probes"
 
-	"github.com/fluxcd/source-controller/api/v1"
+	v1 "github.com/fluxcd/source-controller/api/v1"
 	"github.com/fluxcd/source-controller/api/v1beta2"
 
 	// +kubebuilder:scaffold:imports
@@ -59,6 +59,7 @@ import (
 	"github.com/fluxcd/source-controller/internal/controller"
 	intdigest "github.com/fluxcd/source-controller/internal/digest"
 	"github.com/fluxcd/source-controller/internal/features"
+	sgit "github.com/fluxcd/source-controller/internal/git"
 	"github.com/fluxcd/source-controller/internal/helm"
 	"github.com/fluxcd/source-controller/internal/helm/registry"
 )
@@ -187,14 +188,16 @@ func main() {
 	mustSetupHelmLimits(helmIndexLimit, helmChartLimit, helmChartFileLimit)
 	helmIndexCache, helmIndexCacheItemTTL := mustInitHelmCache(helmCacheMaxSize, helmCacheTTL, helmCachePurgeInterval)
 
+	providerAuth := mustInitProviderAuth()
 	ctx := ctrl.SetupSignalHandler()
 
 	if err := (&controller.GitRepositoryReconciler{
-		Client:         mgr.GetClient(),
-		EventRecorder:  eventRecorder,
-		Metrics:        metrics,
-		Storage:        storage,
-		ControllerName: controllerName,
+		Client:                mgr.GetClient(),
+		EventRecorder:         eventRecorder,
+		Metrics:               metrics,
+		Storage:               storage,
+		ControllerName:        controllerName,
+		ProviderAuthenticator: providerAuth,
 	}).SetupWithManagerAndOptions(mgr, controller.GitRepositoryReconcilerOptions{
 		DependencyRequeueInterval: requeueDependency,
 		RateLimiter:               helper.GetRateLimiter(rateLimiterOptions),
@@ -449,6 +452,21 @@ func determineAdvStorageAddr(storageAddr string) string {
 		}
 	}
 	return net.JoinHostPort(host, port)
+}
+
+func mustInitProviderAuth() *sgit.ProviderAuthenticator {
+	capacity := sgit.DefaultAuthCacheCapacity
+	disabled, found := os.LookupEnv("GIT_PROVIDER_AUTHCACHE_DISABLED")
+	if found && disabled == "true" {
+		capacity = -1
+	}
+
+	providerAuth, err := sgit.NewProviderAuthenticator(sgit.WithCacheCapacity(capacity))
+	if err != nil {
+		setupLog.Error(err, "unable to initialise git provider auth cache")
+		os.Exit(1)
+	}
+	return providerAuth
 }
 
 func envOrDefault(envName, defaultValue string) string {
