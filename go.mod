@@ -179,7 +179,8 @@ require (
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/fluxcd/gitkit v0.6.0 // indirect
 	github.com/fluxcd/pkg/apis/acl v0.3.0 // indirect
-	github.com/fluxcd/pkg/cache v0.0.2 // indirect
+	github.com/fluxcd/pkg/auth v0.0.0-00010101000000-000000000000 // indirect
+	github.com/fluxcd/pkg/cache v0.0.3 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/fxamacker/cbor/v2 v2.7.0 // indirect
 	github.com/go-asn1-ber/asn1-ber v1.5.5 // indirect
@@ -405,3 +406,9 @@ require (
 )
 
 retract v0.32.0 // Refers to incorrect ./api version.
+
+replace github.com/fluxcd/pkg/auth => github.com/dipti-pai/pkg/auth v0.0.0-20240822170700-a2f84e127913
+
+replace github.com/fluxcd/pkg/git => github.com/dipti-pai/pkg/git v0.0.0-20240822170700-a2f84e127913
+
+replace github.com/fluxcd/pkg/git/gogit => github.com/dipti-pai/pkg/git/gogit v0.0.0-20240822170700-a2f84e127913

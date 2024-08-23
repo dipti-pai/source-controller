@@ -27,6 +27,14 @@ import (
 const (
 	// GitRepositoryKind is the string representation of a GitRepository.
 	GitRepositoryKind = "GitRepository"
+
+	// GenericAuthProvider provides support for authentication using
+	// credentials specified in secretRef
+	GenericAuthProvider string = "generic"
+
+	// AzureAuthProvider provides support for authentication to azure
+	// repositories using Managed Identity
+	AzureAuthProvider string = "azure"
 )
 
 const (
@@ -79,6 +87,13 @@ type GitRepositorySpec struct {
 	// and 'known_hosts' fields.
 	// +optional
 	SecretRef *meta.LocalObjectReference `json:"secretRef,omitempty"`
+
+	// The provider used for authentication, can be 'azure', 'generic'.
+	// When not specified, defaults to 'generic'.
+	// +kubebuilder:validation:Enum=generic;azure
+	// +kubebuilder:default:=generic
+	// +optional
+	Provider string `json:"provider,omitempty"`
 
 	// Interval at which the GitRepository URL is checked for updates.
 	// This interval is approximate and may be subject to jitter to ensure

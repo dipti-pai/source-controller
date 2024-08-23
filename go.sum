@@ -291,6 +291,12 @@ github.com/digitorus/timestamp v0.0.0-20231217203849-220c5c2851b7 h1:lxmTCgmHE1G
 github.com/digitorus/timestamp v0.0.0-20231217203849-220c5c2851b7/go.mod h1:GvWntX9qiTlOud0WkQ6ewFm0LPy5JUR1Xo0Ngbd1w6Y=
 github.com/dimchansky/utfbom v1.1.1 h1:vV6w1AhK4VMnhBno/TPVCoK9U/LP0PkLCS9tbxHdi/U=
 github.com/dimchansky/utfbom v1.1.1/go.mod h1:SxdoEBH5qIqFocHMyGOXVAybYJdr71b1Q/j0mACtrfE=
+github.com/dipti-pai/pkg/auth v0.0.0-20240822170700-a2f84e127913 h1:uUaYV/QbxgLW1kYYKhSrrJFYp/D94ogYoRtBRM/Trfk=
+github.com/dipti-pai/pkg/auth v0.0.0-20240822170700-a2f84e127913/go.mod h1:GyfTIyzUHtsVQG0OsetFI4rA9Vinbt0AdFKKYewWm5E=
+github.com/dipti-pai/pkg/git v0.0.0-20240822170700-a2f84e127913 h1:JE4MuxE3P7ctLy9tCies8rsvPcJcAVyhmWTaeb6D4aI=
+github.com/dipti-pai/pkg/git v0.0.0-20240822170700-a2f84e127913/go.mod h1:7+ND7LWwCVRuO0ZAb+TPWQF6M3SObY10VIodFToGW+A=
+github.com/dipti-pai/pkg/git/gogit v0.0.0-20240822170700-a2f84e127913 h1:quDlLeIOI59IeI0WXFJlSJD8QEiNuYgk2OtHhNxquK0=
+github.com/dipti-pai/pkg/git/gogit v0.0.0-20240822170700-a2f84e127913/go.mod h1:enJclTZCS1HLaXeC3zTu16axNLamghes0p48Km/owvY=
 github.com/distribution/distribution/v3 v3.0.0-beta.1 h1:X+ELTxPuZ1Xe5MsD3kp2wfGUhc8I+MPfRis8dZ818Ic=
 github.com/distribution/distribution/v3 v3.0.0-beta.1/go.mod h1:O9O8uamhHzWWQVTjuQpyYUVm/ShPHPUDgvQMpHGVBDs=
 github.com/distribution/reference v0.6.0 h1:0IXCQ5g4/QMHHkarYzh5l+u8T3t73zM5QvfrDyIgxBk=
@@ -349,12 +355,8 @@ github.com/fluxcd/pkg/apis/event v0.10.0 h1:eMYXjMnLQ9jctPkTauuiBmEI127RjCKDf1zf
 github.com/fluxcd/pkg/apis/event v0.10.0/go.mod h1:pG/3gbSBLNy6YGZP2eajiyVgkEQDvva789t46PY6NFE=
 github.com/fluxcd/pkg/apis/meta v1.6.0 h1:93TcRpiph0OCoQh+cI+PM7E35kBW9dScuas9tWc90Dw=
 github.com/fluxcd/pkg/apis/meta v1.6.0/go.mod h1:ZOeHcvyVdZDC5ZOGV7YuwplIvAx6LvmpeyhfTcNZCnc=
-github.com/fluxcd/pkg/cache v0.0.2 h1:+x1VCNDQbTQ5AbrOpMH3ps3NGek+qt52+6z7UjUP818=
-github.com/fluxcd/pkg/cache v0.0.2/go.mod h1:Xo09Wdo2YIiqyNrQbwvp83hIzxevznsvhcy+6xFjbcM=
-github.com/fluxcd/pkg/git v0.20.0 h1:byUbxLLZ9AyVYmK16mvxY/iA/ZhNwA30GHKPKNh7pik=
-github.com/fluxcd/pkg/git v0.20.0/go.mod h1:YnBOFhX7zzyVjg/u1Et1xBqXs30kb2sWWesIl3/glhw=
-github.com/fluxcd/pkg/git/gogit v0.20.0 h1:ZlWq//I465lv9aEEWaJhjJaTiTtnjcH+Td0fg1rPXWU=
-github.com/fluxcd/pkg/git/gogit v0.20.0/go.mod h1:ZA4WsKr28cj1yuplxOw9vHgCL4OCNJJLib1cJ77Tp9o=
+github.com/fluxcd/pkg/cache v0.0.3 h1:VK5joG/p+amh5Ob+r1OFOx0cCYiswEf8mX1/J1BG7Mw=
+github.com/fluxcd/pkg/cache v0.0.3/go.mod h1:UU6oFhV+mG0A5/RwIlvXhyuKlJwQEkk92jVB3vKMLtk=
 github.com/fluxcd/pkg/gittestserver v0.13.0 h1:6rvD9Z7+4zBcNT+LK0z4H0z6mDaw1Zd8ZaLh/dw8dzI=
 github.com/fluxcd/pkg/gittestserver v0.13.0/go.mod h1:LDw32Wo9mTmKNmJq4g7LRVBqPXlpMIWFBDOrRRh/+As=
 github.com/fluxcd/pkg/helmtestserver v0.19.0 h1:DbidD46we8iLp/Sxn2TO8twtlP5gxFQaP3XTNJC0bl8=
