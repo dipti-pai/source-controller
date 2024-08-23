@@ -45,6 +45,7 @@ import (
 
 	eventv1 "github.com/fluxcd/pkg/apis/event/v1beta1"
 	"github.com/fluxcd/pkg/apis/meta"
+	"github.com/fluxcd/pkg/cache"
 	"github.com/fluxcd/pkg/git"
 	"github.com/fluxcd/pkg/git/gogit"
 	"github.com/fluxcd/pkg/git/repository"
@@ -127,9 +128,9 @@ type GitRepositoryReconciler struct {
 	kuberecorder.EventRecorder
 	helper.Metrics
 
-	Storage        *Storage
-	ControllerName string
-
+	Storage           *Storage
+	ControllerName    string
+	Cache             cache.Expirable[cache.StoreObject[git.Credentials]]
 	requeueDependency time.Duration
 	features          map[string]bool
 
@@ -649,10 +650,15 @@ func (r *GitRepositoryReconciler) getAuthOpts(ctx context.Context, obj *sourcev1
 	}
 
 	// Configure provider authentication if specified in spec
-	if obj.Spec.Provider != sourcev1.GenericAuthProvider {
+	if obj.Spec.Provider != "" && obj.Spec.Provider != sourcev1.GenericAuthProvider {
 		authOpts.ProviderOpts = &git.ProviderOptions{
 			Name: obj.Spec.Provider,
 		}
+	}
+
+	// Configure git credential cache if it is enabled
+	if r.Cache != nil {
+		authOpts.Cache = r.Cache
 	}
 
 	return authOpts, nil

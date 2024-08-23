@@ -38,6 +38,7 @@ import (
 	ctrlcfg "sigs.k8s.io/controller-runtime/pkg/config"
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 
+	pkgcache "github.com/fluxcd/pkg/cache"
 	"github.com/fluxcd/pkg/git"
 	"github.com/fluxcd/pkg/runtime/client"
 	helper "github.com/fluxcd/pkg/runtime/controller"
@@ -90,30 +91,32 @@ func init() {
 
 func main() {
 	var (
-		metricsAddr              string
-		eventsAddr               string
-		healthAddr               string
-		storagePath              string
-		storageAddr              string
-		storageAdvAddr           string
-		concurrent               int
-		requeueDependency        time.Duration
-		helmIndexLimit           int64
-		helmChartLimit           int64
-		helmChartFileLimit       int64
-		clientOptions            client.Options
-		logOptions               logger.Options
-		leaderElectionOptions    leaderelection.Options
-		rateLimiterOptions       helper.RateLimiterOptions
-		featureGates             feathelper.FeatureGates
-		watchOptions             helper.WatchOptions
-		intervalJitterOptions    jitter.IntervalOptions
-		helmCacheMaxSize         int
-		helmCacheTTL             string
-		helmCachePurgeInterval   string
-		artifactRetentionTTL     time.Duration
-		artifactRetentionRecords int
-		artifactDigestAlgo       string
+		metricsAddr                     string
+		eventsAddr                      string
+		healthAddr                      string
+		storagePath                     string
+		storageAddr                     string
+		storageAdvAddr                  string
+		concurrent                      int
+		requeueDependency               time.Duration
+		helmIndexLimit                  int64
+		helmChartLimit                  int64
+		helmChartFileLimit              int64
+		clientOptions                   client.Options
+		logOptions                      logger.Options
+		leaderElectionOptions           leaderelection.Options
+		rateLimiterOptions              helper.RateLimiterOptions
+		featureGates                    feathelper.FeatureGates
+		watchOptions                    helper.WatchOptions
+		intervalJitterOptions           jitter.IntervalOptions
+		helmCacheMaxSize                int
+		helmCacheTTL                    string
+		helmCachePurgeInterval          string
+		gitCredentialCacheMaxSize       int
+		gitCredentialCachePurgeInterval string
+		artifactRetentionTTL            time.Duration
+		artifactRetentionRecords        int
+		artifactDigestAlgo              string
 	)
 
 	flag.StringVar(&metricsAddr, "metrics-addr", envOrDefault("METRICS_ADDR", ":8080"),
@@ -142,6 +145,10 @@ func main() {
 		"The TTL of an index in the cache. Valid time units are ns, us (or µs), ms, s, m, h.")
 	flag.StringVar(&helmCachePurgeInterval, "helm-cache-purge-interval", "1m",
 		"The interval at which the cache is purged. Valid time units are ns, us (or µs), ms, s, m, h.")
+	flag.IntVar(&gitCredentialCacheMaxSize, "git-credential-cache-max-size", 10,
+		"The maximum size of the cache in number of indexes.")
+	flag.StringVar(&gitCredentialCachePurgeInterval, "git-credential-cache-purge-interval", "1m",
+		"The interval at which the cache purges expired indexes. Valid time units are ns, us (or µs), ms, s, m, h.")
 	flag.StringSliceVar(&git.KexAlgos, "ssh-kex-algos", []string{},
 		"The list of key exchange algorithms to use for ssh connections, arranged from most preferred to the least.")
 	flag.StringSliceVar(&git.HostKeyAlgos, "ssh-hostkey-algos", []string{},
@@ -186,7 +193,7 @@ func main() {
 
 	mustSetupHelmLimits(helmIndexLimit, helmChartLimit, helmChartFileLimit)
 	helmIndexCache, helmIndexCacheItemTTL := mustInitHelmCache(helmCacheMaxSize, helmCacheTTL, helmCachePurgeInterval)
-
+	gitCredentialCache := mustInitGitCredentialCache(gitCredentialCacheMaxSize, gitCredentialCachePurgeInterval)
 	ctx := ctrl.SetupSignalHandler()
 
 	if err := (&controller.GitRepositoryReconciler{
@@ -195,6 +202,7 @@ func main() {
 		Metrics:        metrics,
 		Storage:        storage,
 		ControllerName: controllerName,
+		Cache:          gitCredentialCache,
 	}).SetupWithManagerAndOptions(mgr, controller.GitRepositoryReconcilerOptions{
 		DependencyRequeueInterval: requeueDependency,
 		RateLimiter:               helper.GetRateLimiter(rateLimiterOptions),
@@ -404,6 +412,28 @@ func mustInitHelmCache(maxSize int, itemTTL, purgeInterval string) (*cache.Cache
 	}
 
 	return cache.New(maxSize, interval), ttl
+}
+
+func mustInitGitCredentialCache(maxSize int, purgeInterval string) pkgcache.Expirable[pkgcache.StoreObject[git.Credentials]] {
+	if maxSize <= 0 {
+		setupLog.Info("caching of git credentials is disabled")
+		return nil
+	}
+
+	interval, err := time.ParseDuration(purgeInterval)
+	if err != nil {
+		setupLog.Error(err, "unable to parse git credential cache purge interval")
+		os.Exit(1)
+	}
+
+	c, err := pkgcache.New(maxSize, pkgcache.StoreObjectKeyFunc,
+		pkgcache.WithCleanupInterval[pkgcache.StoreObject[git.Credentials]](interval))
+	if err != nil {
+		setupLog.Error(err, "unable to create git credential cache")
+		os.Exit(1)
+	}
+
+	return c
 }
 
 func mustInitStorage(path string, storageAdvAddr string, artifactRetentionTTL time.Duration, artifactRetentionRecords int, artifactDigestAlgo string) *controller.Storage {
