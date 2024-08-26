@@ -28,13 +28,13 @@ const (
 	// GitRepositoryKind is the string representation of a GitRepository.
 	GitRepositoryKind = "GitRepository"
 
-	// GenericAuthProvider provides support for authentication using
+	// GitProviderGeneric provides support for authentication using
 	// credentials specified in secretRef
-	GenericAuthProvider string = "generic"
+	GitProviderGeneric string = "generic"
 
-	// AzureAuthProvider provides support for authentication to azure
+	// GitProviderAzure provides support for authentication to azure
 	// repositories using Managed Identity
-	AzureAuthProvider string = "azure"
+	GitProviderAzure string = "azure"
 )
 
 const (

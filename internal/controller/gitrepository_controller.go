@@ -650,7 +650,7 @@ func (r *GitRepositoryReconciler) getAuthOpts(ctx context.Context, obj *sourcev1
 	}
 
 	// Configure provider authentication if specified in spec
-	if obj.Spec.Provider != "" && obj.Spec.Provider != sourcev1.GenericAuthProvider {
+	if obj.Spec.Provider != "" && obj.Spec.Provider != sourcev1.GitProviderGeneric {
 		authOpts.ProviderOpts = &git.ProviderOptions{
 			Name: obj.Spec.Provider,
 		}
