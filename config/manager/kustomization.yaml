@@ -5,5 +5,21 @@ resources:
 - deployment.yaml
 images:
 - name: fluxcd/source-controller
-  newName: fluxcd/source-controller
-  newTag: v1.3.0
+  newName: dpacr1.azurecr.io/source-controller
+  newTag: v1.1
+patches:
+- patch: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: controller
+      labels:
+        azure.workload.identity/use: "true"
+    spec:
+      template:
+        metadata:
+          labels:
+            azure.workload.identity/use: "true"
+  target:
+    kind: Deployment
+    name: (source-controller)

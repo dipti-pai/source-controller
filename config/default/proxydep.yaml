@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: proxy-server
+spec:
+  selector:
+    matchLabels:
+      app: proxy-server
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: proxy-server
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: proxy
+        image: ghcr.io/matheuscscp/go-proxy-app:v1
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: 8080
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+          requests:
+            cpu: 50m
+            memory: 64Mi
+
