@@ -28,6 +28,7 @@ import (
 
 	securejoin "github.com/cyphar/filepath-securejoin"
 	"github.com/fluxcd/pkg/auth/azure"
+	"github.com/fluxcd/pkg/auth/github"
 	"github.com/fluxcd/pkg/runtime/logger"
 	"github.com/go-git/go-git/v5/plumbing/transport"
 	corev1 "k8s.io/api/core/v1"
@@ -613,10 +614,11 @@ func (r *GitRepositoryReconciler) reconcileSource(ctx context.Context, sp *patch
 // transport.ProxyOptions object using those settings and then returns it.
 func (r *GitRepositoryReconciler) getProxyOpts(ctx context.Context, proxySecretName,
 	proxySecretNamespace string) (*transport.ProxyOptions, error) {
-	proxyData, err := r.getSecretData(ctx, proxySecretName, proxySecretNamespace)
+	proxySecret, err := r.getSecret(ctx, proxySecretName, proxySecretNamespace)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get proxy secret '%s/%s': %w", proxySecretNamespace, proxySecretName, err)
 	}
+	proxyData := proxySecret.Data
 	address, ok := proxyData["address"]
 	if !ok {
 		return nil, fmt.Errorf("invalid proxy secret '%s/%s': key 'address' is missing", proxySecretNamespace, proxySecretName)
@@ -635,12 +637,14 @@ func (r *GitRepositoryReconciler) getProxyOpts(ctx context.Context, proxySecretN
 // URL and returns it.
 func (r *GitRepositoryReconciler) getAuthOpts(ctx context.Context, obj *sourcev1.GitRepository, u url.URL) (*git.AuthOptions, error) {
 	var authData map[string][]byte
+	var authSecret corev1.Secret
 	if obj.Spec.SecretRef != nil {
 		var err error
-		authData, err = r.getSecretData(ctx, obj.Spec.SecretRef.Name, obj.GetNamespace())
+		authSecret, err = r.getSecret(ctx, obj.Spec.SecretRef.Name, obj.GetNamespace())
 		if err != nil {
 			return nil, fmt.Errorf("failed to get secret '%s/%s': %w", obj.GetNamespace(), obj.Spec.SecretRef.Name, err)
 		}
+		authData = authSecret.Data
 	}
 
 	// Configure authentication strategy to access the source
@@ -650,11 +654,19 @@ func (r *GitRepositoryReconciler) getAuthOpts(ctx context.Context, obj *sourcev1
 	}
 
 	// Configure provider authentication if specified in spec
-	if obj.GetProvider() == sourcev1.GitProviderAzure {
+	switch obj.GetProvider() {
+	case sourcev1.GitProviderAzure:
 		authOpts.ProviderOpts = &git.ProviderOptions{
-			Name: obj.GetProvider(),
+			Name: sourcev1.GitProviderAzure,
 			AzureOpts: []azure.OptFunc{
 				azure.WithAzureDevOpsScope(),
+			},
+		}
+	case sourcev1.GitProviderGitHub:
+		authOpts.ProviderOpts = &git.ProviderOptions{
+			Name: sourcev1.GitProviderGitHub,
+			GitHubOpts: []github.OptFunc{
+				github.WithSecret(authSecret),
 			},
 		}
 	}
@@ -662,16 +674,16 @@ func (r *GitRepositoryReconciler) getAuthOpts(ctx context.Context, obj *sourcev1
 	return authOpts, nil
 }
 
-func (r *GitRepositoryReconciler) getSecretData(ctx context.Context, name, namespace string) (map[string][]byte, error) {
+func (r *GitRepositoryReconciler) getSecret(ctx context.Context, name, namespace string) (corev1.Secret, error) {
 	key := types.NamespacedName{
 		Namespace: namespace,
 		Name:      name,
 	}
 	var secret corev1.Secret
 	if err := r.Client.Get(ctx, key, &secret); err != nil {
-		return nil, err
+		return secret, err
 	}
-	return secret.Data, nil
+	return secret, nil
 }
 
 // reconcileArtifact archives a new Artifact to the Storage, if the current
