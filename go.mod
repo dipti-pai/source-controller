@@ -423,6 +423,6 @@ require (
 
 retract v0.32.0 // Refers to incorrect ./api version.
 
-replace github.com/fluxcd/pkg/auth => github.com/dipti-pai/pkg/auth v0.3.1-0.20250717174332-b0616b1e569e
+replace github.com/fluxcd/pkg/auth => github.com/dipti-pai/pkg/auth v0.3.1-0.20250728194214-0a6eb2f8d70a
 
-replace github.com/fluxcd/pkg/oci => github.com/dipti-pai/pkg/oci v0.45.1-0.20250717174332-b0616b1e569e
+replace github.com/fluxcd/pkg/oci => github.com/dipti-pai/pkg/oci v0.45.1-0.20250728194214-0a6eb2f8d70a

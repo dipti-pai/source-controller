@@ -314,10 +314,10 @@ github.com/digitorus/timestamp v0.0.0-20231217203849-220c5c2851b7 h1:lxmTCgmHE1G
 github.com/digitorus/timestamp v0.0.0-20231217203849-220c5c2851b7/go.mod h1:GvWntX9qiTlOud0WkQ6ewFm0LPy5JUR1Xo0Ngbd1w6Y=
 github.com/dimchansky/utfbom v1.1.1 h1:vV6w1AhK4VMnhBno/TPVCoK9U/LP0PkLCS9tbxHdi/U=
 github.com/dimchansky/utfbom v1.1.1/go.mod h1:SxdoEBH5qIqFocHMyGOXVAybYJdr71b1Q/j0mACtrfE=
-github.com/dipti-pai/pkg/auth v0.3.1-0.20250717174332-b0616b1e569e h1:KuVSxBbhQuiqoHzXy8o77wSqsiVPqoniPUBGlg0E/1Y=
-github.com/dipti-pai/pkg/auth v0.3.1-0.20250717174332-b0616b1e569e/go.mod h1:g9KJ4iNcCd6Sb7al4yN1+olgOfgwmU4lgCWbwvMsFRE=
-github.com/dipti-pai/pkg/oci v0.45.1-0.20250717174332-b0616b1e569e h1:TXANR6ZYk2tj+ymvVkVHPvAARNhoTQ+oke5dSj6Wnqw=
-github.com/dipti-pai/pkg/oci v0.45.1-0.20250717174332-b0616b1e569e/go.mod h1:i4kFlYDC84u6vtIE54eco/ArcLPXqTv+/Gt7ncSKmoE=
+github.com/dipti-pai/pkg/auth v0.3.1-0.20250728194214-0a6eb2f8d70a h1:ATdDxlSnHhQIzNT3f4JnW/zpB/VaOs+KlYP8v+weSQk=
+github.com/dipti-pai/pkg/auth v0.3.1-0.20250728194214-0a6eb2f8d70a/go.mod h1:g9KJ4iNcCd6Sb7al4yN1+olgOfgwmU4lgCWbwvMsFRE=
+github.com/dipti-pai/pkg/oci v0.45.1-0.20250728194214-0a6eb2f8d70a h1:wupNj2RkeKkpSdsSRvp++8CHOGU8VrYrYSCJNjYhMfE=
+github.com/dipti-pai/pkg/oci v0.45.1-0.20250728194214-0a6eb2f8d70a/go.mod h1:i4kFlYDC84u6vtIE54eco/ArcLPXqTv+/Gt7ncSKmoE=
 github.com/distribution/distribution/v3 v3.0.0-rc.2 h1:tTrzntanYMbd20SyvdeR83Ya1l/aBwDcA3NCIpmwemc=
 github.com/distribution/distribution/v3 v3.0.0-rc.2/go.mod h1:H2zIRRXS20ylnv2HTuKILAWuANjuA60GB7MLOsQag7Y=
 github.com/distribution/reference v0.6.0 h1:0IXCQ5g4/QMHHkarYzh5l+u8T3t73zM5QvfrDyIgxBk=
